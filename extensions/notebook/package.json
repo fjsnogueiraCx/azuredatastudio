@@ -339,11 +339,11 @@
           "displayName": "Python 3",
           "connectionProviderIds": []
         },
-				{
-					"name": "powershell",
-					"displayName": "PowerShell",
-					"connectionProviderIds": []
-				}
+        {
+          "name": "powershell",
+          "displayName": "PowerShell",
+          "connectionProviderIds": []
+        }
       ]
     },
     "viewsContainers": {
