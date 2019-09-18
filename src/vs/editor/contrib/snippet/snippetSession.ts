@@ -23,6 +23,7 @@ import { registerThemingParticipant } from 'vs/platform/theme/common/themeServic
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { ILabelService } from 'vs/platform/label/common/label';
+import { EditorOption } from 'vs/editor/common/config/editorOptions';
 
 registerThemingParticipant((theme, collector) => {
 
@@ -444,7 +445,7 @@ export class SnippetSession {
 
 			snippet.resolveVariables(new CompositeSnippetVariableResolver([
 				modelBasedVariableResolver,
-				new ClipboardBasedVariableResolver(clipboardText, idx, indexedSelections.length),
+				new ClipboardBasedVariableResolver(clipboardText, idx, indexedSelections.length, editor.getOption(EditorOption.multiCursorPaste) === 'spread'),
 				new SelectionBasedVariableResolver(model, selection),
 				new CommentBasedVariableResolver(model),
 				new TimeBasedVariableResolver,
@@ -489,21 +490,18 @@ export class SnippetSession {
 			return;
 		}
 
-		const model = this._editor.getModel();
-
 		// make insert edit and start with first selections
 		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, this._template, this._options.overwriteBefore, this._options.overwriteAfter, false, this._options.adjustWhitespace, this._options.clipboardText);
 		this._snippets = snippets;
 
-		const selections = model.pushEditOperations(this._editor.getSelections(), edits, undoEdits => {
+		this._editor.executeEdits('snippet', edits, undoEdits => {
 			if (this._snippets[0].hasPlaceholder) {
 				return this._move(true);
 			} else {
 				return undoEdits.map(edit => Selection.fromPositions(edit.range.getEndPosition()));
 			}
-		})!;
-		this._editor.setSelections(selections);
-		this._editor.revealRange(selections[0]);
+		});
+		this._editor.revealRange(this._editor.getSelections()[0]);
 	}
 
 	merge(template: string, options: ISnippetSessionInsertOptions = _defaultOptions): void {
@@ -513,8 +511,7 @@ export class SnippetSession {
 		this._templateMerges.push([this._snippets[0]._nestingLevel, this._snippets[0]._placeholderGroupsIdx, template]);
 		const { edits, snippets } = SnippetSession.createEditsAndSnippets(this._editor, template, options.overwriteBefore, options.overwriteAfter, true, options.adjustWhitespace, options.clipboardText);
 
-		this._editor.setSelections(this._editor.getModel().pushEditOperations(this._editor.getSelections(), edits, undoEdits => {
-
+		this._editor.executeEdits('snippet', edits, undoEdits => {
 			for (const snippet of this._snippets) {
 				snippet.merge(snippets);
 			}
@@ -525,7 +522,7 @@ export class SnippetSession {
 			} else {
 				return undoEdits.map(edit => Selection.fromPositions(edit.range.getEndPosition()));
 			}
-		})!);
+		});
 	}
 
 	next(): void {

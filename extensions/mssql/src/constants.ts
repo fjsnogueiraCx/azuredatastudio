@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-export const serviceName = 'SqlToolsService';
+export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
-export const serviceCrashMessage = 'SQL Tools Service component exited unexpectedly. Please restart Azure Data Studio.';
-export const serviceCrashButton = 'View Known Issues';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
 
@@ -38,6 +36,8 @@ export const isBigDataClusterProperty = 'isBigDataCluster';
 // SERVICE NAMES //////////////////////////////////////////////////////////
 export const ObjectExplorerService = 'objectexplorer';
 export const CmsService = 'cmsService';
+export const DacFxService = 'dacfxService';
+export const SchemaCompareService = 'schemaCompareService';
 export const objectExplorerPrefix: string = 'objectexplorer://';
 export const ViewType = 'view';
 

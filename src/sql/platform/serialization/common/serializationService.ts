@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
@@ -40,7 +39,7 @@ export interface SerializeDataParams {
 }
 
 export interface ISerializationService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	registerProvider(providerId: string, provider: azdata.SerializationProvider): void;
 
@@ -52,7 +51,7 @@ export interface ISerializationService {
 
 	serializeResults(request: SerializeDataParams): Promise<azdata.SerializeDataResult>;
 
-	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider;
+	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined;
 }
 
 function getBatchSize(totalRows: number, currentIndex: number): number {
@@ -62,9 +61,7 @@ function getBatchSize(totalRows: number, currentIndex: number): number {
 
 export class SerializationService implements ISerializationService {
 
-	_serviceBrand: any;
-
-	private disposables: IDisposable[] = [];
+	_serviceBrand: undefined;
 
 	private providers: { providerId: string, provider: azdata.SerializationProvider }[] = [];
 
@@ -93,7 +90,7 @@ export class SerializationService implements ISerializationService {
 
 	}
 
-	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider {
+	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 
@@ -196,9 +193,5 @@ export class SerializationService implements ISerializationService {
 			isLastBatch: isLastBatch
 		};
 		return continueSerializeRequest;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }
