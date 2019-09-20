@@ -267,7 +267,7 @@ export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} add aditional filter
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} add additional filter
 
 	const nodeModules = gulp.src('extensions/node_modules/**', { base: '.' });
 	const localExtensions = localExtensionDescriptions.map(extension => {
